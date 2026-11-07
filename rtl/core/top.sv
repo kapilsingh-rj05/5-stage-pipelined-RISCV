@@ -25,7 +25,7 @@ module top(
     id_stage id_stg(.clk(clk), .reset(reset), .if_id_in(if_id_reg), .writeData(wb_writeData), .writeRegister(wb_writeRegister), .RegWrite(wb_RegWrite_data), .id_ex_out(id_ex_next));
 
     // EX Stage
-    ex_stage ex_stg(.id_ex_in(id_ex_reg), .ex_mem_out(ex_mem_next));
+    ex_stage ex_stg(.id_ex_in(id_ex_reg), .ex_mem_out(ex_mem_next), .ex_mem_reg(ex_mem_reg), .mem_wb_reg(mem_wb_reg), .wb_writeData(wb_writeData));
 
     // MEM Stage
     mem_stage mem_stg(.ex_mem_in(ex_mem_reg), .mem_wb_out(mem_wb_next), .PCSrc(PCSrc), .pc_branch(pc_branch), .clk(clk));

@@ -28,24 +28,24 @@ module top_tb();
         #20;
         reset = 1; 
         
-        // Wait 1500ns (150 cycles) to process all instructions
-        #1500; 
+        // Wait 500ns (50 cycles) to let the pipeline run
+        #500; 
 
-        $display("----------------------------------------");
-        $display("TEST: ADDI x5 REGISTERS (WITH NOPs)");
-        $display("----------------------------------------");
+        $display("--------------------------------------------------");
+        $display("ISOLATED TEST: FORWARDING (ADD, SUB, AND, OR)");
+        $display("--------------------------------------------------");
         
-        if (dut.id_stg.regfile.registers[1] == 32'd10) $display("PASS: x1 = %0d", dut.id_stg.regfile.registers[1]); else $display("FAIL: x1 = %0d (Expected 10)", dut.id_stg.regfile.registers[1]);
-        if (dut.id_stg.regfile.registers[2] == 32'd20) $display("PASS: x2 = %0d", dut.id_stg.regfile.registers[2]); else $display("FAIL: x2 = %0d (Expected 20)", dut.id_stg.regfile.registers[2]);
-        if (dut.id_stg.regfile.registers[3] == 32'd30) $display("PASS: x3 = %0d", dut.id_stg.regfile.registers[3]); else $display("FAIL: x3 = %0d (Expected 30)", dut.id_stg.regfile.registers[3]);
-        if (dut.id_stg.regfile.registers[4] == 32'd40) $display("PASS: x4 = %0d", dut.id_stg.regfile.registers[4]); else $display("FAIL: x4 = %0d (Expected 40)", dut.id_stg.regfile.registers[4]);
-        if (dut.id_stg.regfile.registers[5] == 32'd50) $display("PASS: x5 = %0d", dut.id_stg.regfile.registers[5]); else $display("FAIL: x5 = %0d (Expected 50)", dut.id_stg.regfile.registers[5]);
+        // Check Basic Data
+        if (dut.id_stg.regfile.registers[1] == 32'd5)  $display("PASS: x1 = %0d", dut.id_stg.regfile.registers[1]); else $display("FAIL: x1 = %0d (Expected 5)", dut.id_stg.regfile.registers[1]);
+        if (dut.id_stg.regfile.registers[2] == 32'd10) $display("PASS: x2 = %0d", dut.id_stg.regfile.registers[2]); else $display("FAIL: x2 = %0d (Expected 10)", dut.id_stg.regfile.registers[2]);
         
-        // Check that x0 is hardwired to 0
-        if (dut.id_stg.regfile.registers[0] == 32'd0)  $display("PASS: x0 = 0");
-        else                                          $display("FAIL: x0 != 0");
+        // Check Forwarding Paths
+        if (dut.id_stg.regfile.registers[3] == 32'd15) $display("PASS: x3 = 15 (ADD)"); else $display("FAIL: x3 = %0d (Expected 15)", dut.id_stg.regfile.registers[3]);
+        if (dut.id_stg.regfile.registers[4] == 32'd10) $display("PASS: x4 = 10 (SUB)"); else $display("FAIL: x4 = %0d (Expected 10)", dut.id_stg.regfile.registers[4]);
+        if (dut.id_stg.regfile.registers[5] == 32'd10) $display("PASS: x5 = 10 (AND)"); else $display("FAIL: x5 = %0d (Expected 10)", dut.id_stg.regfile.registers[5]);
+        if (dut.id_stg.regfile.registers[6] == 32'd15) $display("PASS: x6 = 15 (OR)");  else $display("FAIL: x6 = %0d (Expected 15)", dut.id_stg.regfile.registers[6]);
 
-        $display("----------------------------------------");
+        $display("--------------------------------------------------");
         $finish;
     end
 
