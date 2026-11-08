@@ -6,6 +6,7 @@ module id_stage(
     input logic[31:0] writeData,
     input logic[4:0] writeRegister,
     input logic RegWrite,
+    input logic control_mux_sel,
     output id_ex_t id_ex_out
 );
 
@@ -24,6 +25,6 @@ module id_stage(
     assign id_ex_out.rs2 = if_id_in.instr[24:20];
     assign id_ex_out.rd = if_id_in.instr[11:7];
     assign id_ex_out.func3 = {if_id_in.instr[30], if_id_in.instr[14:12]};
-    assign id_ex_out.control = {ALUSrc, MemToReg, RegWrite_if, MemRead, MemWrite, Branch, ALUOp1, ALUOp0};  
+    assign id_ex_out.control = control_mux_sel ? {ALUSrc, MemToReg, RegWrite_if, MemRead, MemWrite, Branch, ALUOp1, ALUOp0} : 8'd0;  
 
 endmodule

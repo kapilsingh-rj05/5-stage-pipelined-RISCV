@@ -33,14 +33,4 @@ module ex_stage(
     assign ex_mem_out.zero = aluZero;
     assign ex_mem_out.control = id_ex_in.control[6:2];
 
-    always_comb begin
-        if (id_ex_in.rd == 5'd4 || id_ex_in.rd == 5'd5) begin
-            $display("FWD DEBUG (rd=%d):", id_ex_in.rd);
-            $display("  EX/MEM: rd=%d, RegWrite=%b, aluR=%d", ex_mem_reg.rd, ex_mem_reg.control[3], ex_mem_reg.aluR);
-            $display("  MEM/WB: rd=%d, RegWrite=%b, wb_writeData=%d", mem_wb_reg.rd, mem_wb_reg.control[0], wb_writeData);
-            $display("  FWD: forwardA=%b, forwardB=%b", forwardA, forwardB);
-            $display("  ALU IN: val1=%d, val2_raw=%d, imm=%d, alu_val2=%d", alu_val1, alu_val2_raw, id_ex_in.imm, alu_val2);
-        end
-    end
-
 endmodule
