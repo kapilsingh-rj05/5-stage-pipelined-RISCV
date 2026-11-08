@@ -26,6 +26,15 @@ module alu_control(
                 endcase
             end
 
+            ALUOP_ITYPE: begin
+                case(func3)
+                    3'b000: aluControl = ALU_ADD; // ADDI strictly ignores bit30!
+                    3'b111: aluControl = ALU_AND;
+                    3'b110: aluControl = ALU_OR;
+                    default: aluControl = ALU_ADD;
+                endcase
+            end
+
             default: aluControl = ALU_ADD;
         endcase
     end

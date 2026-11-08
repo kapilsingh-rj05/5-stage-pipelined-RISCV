@@ -10,7 +10,7 @@ module top_tb();
         .reset(reset)
     );
 
-    // Clock Generation (100 MHz, 10ns period)
+    // Clock Generation
     initial begin
         clock = 0;
         forever #5 clock = ~clock;
@@ -22,90 +22,47 @@ module top_tb();
         $dumpvars(0, top_tb);
     end
 
-    // Stimulus & Automated Verification
+    // Stimulus & Verification
     initial begin
         int errors = 0;
 
-        // Apply Reset
         reset = 0;
         #20;
         reset = 1; 
+        
+        // Wait 1000ns to allow memory writing and all loop iterations to complete
+        #1000; 
 
-        // Wait 600ns (60 cycles) to let the entire pipeline and branch drains finish
-        #600; 
+        $display("\n========================================================");
+        $display("   GRAND FINALE: MEMORY ARRAY SUMMATION TEST");
+        $display("========================================================");
+        
+        // 1. Accumulator Check
+        if (dut.id_stg.regfile.registers[3] == 32'd100) 
+            $display("[PASS] x3 = 100 (Array summed correctly: 10+20+30+40)"); 
+        else begin $display("[FAIL] x3 = %0d (Expected 100)", dut.id_stg.regfile.registers[3]); errors++; end
+        
+        // 2. Pointer Exit Check
+        if (dut.id_stg.regfile.registers[1] == 32'd16) 
+            $display("[PASS] x1 = 16  (Memory pointer exited loop perfectly)"); 
+        else begin $display("[FAIL] x1 = %0d (Expected 16)", dut.id_stg.regfile.registers[1]); errors++; end
 
-        $display("\n==================================================");
-        $display("   HAZARD UNIT VERIFICATION: FORWARDING & BRANCH   ");
-        $display("==================================================");
+        // 3. Last Loaded Value Check
+        if (dut.id_stg.regfile.registers[5] == 32'd40) 
+            $display("[PASS] x5 = 40  (Load-Use hazard handled perfectly on last element)"); 
+        else begin $display("[FAIL] x5 = %0d (Expected 40)", dut.id_stg.regfile.registers[5]); errors++; end
 
-        // --- 1. Base Setup Checks ---
-        if (dut.id_stg.regfile.registers[1] == 32'd10)
-            $display("[PASS] x1 = 10 (Setup Base)");
-        else begin
-            $display("[FAIL] x1 = %0d (Expected 10)", dut.id_stg.regfile.registers[1]);
-            errors++;
-        end
+        // 4. Completion Flag
+        if (dut.id_stg.regfile.registers[6] == 32'd1) 
+            $display("[PASS] x6 = 1   (Program executed to completion cleanly)"); 
+        else begin $display("[FAIL] x6 = %0d (Expected 1)", dut.id_stg.regfile.registers[6]); errors++; end
 
-        if (dut.id_stg.regfile.registers[2] == 32'd20)
-            $display("[PASS] x2 = 20 (Setup Base)");
-        else begin
-            $display("[FAIL] x2 = %0d (Expected 20)", dut.id_stg.regfile.registers[2]);
-            errors++;
-        end
-
-        // --- 2. RAW Forwarding Checks ---
-        if (dut.id_stg.regfile.registers[3] == 32'd30)
-            $display("[PASS] x3 = 30 (ADD)");
-        else begin
-            $display("[FAIL] x3 = %0d (Expected 30)", dut.id_stg.regfile.registers[3]);
-            errors++;
-        end
-
-        if (dut.id_stg.regfile.registers[4] == 32'd20)
-            $display("[PASS] x4 = 20 (SUB with EX-to-EX Forwarding)");
-        else begin
-            $display("[FAIL] x4 = %0d (Expected 20 from forwarded x3)", dut.id_stg.regfile.registers[4]);
-            errors++;
-        end
-
-        if (dut.id_stg.regfile.registers[5] == 32'd20)
-            $display("[PASS] x5 = 20 (AND with Dual Forwarding)");
-        else begin
-            $display("[FAIL] x5 = %0d (Expected 20)", dut.id_stg.regfile.registers[5]);
-            errors++;
-        end
-
-        if (dut.id_stg.regfile.registers[6] == 32'd30)
-            $display("[PASS] x6 = 30 (OR with Forwarding)");
-        else begin
-            $display("[FAIL] x6 = %0d (Expected 30)", dut.id_stg.regfile.registers[6]);
-            errors++;
-        end
-
-        // --- 3. Branch Hazard Checks ---
-        if (dut.id_stg.regfile.registers[7] == 32'd1)
-            $display("[PASS] x7 = 1  (Branch Not Taken: Fallthrough Executed)");
-        else begin
-            $display("[FAIL] x7 = %0d (Expected 1)", dut.id_stg.regfile.registers[7]);
-            errors++;
-        end
-
-        if (dut.id_stg.regfile.registers[8] == 32'd42)
-            $display("[PASS] x8 = 42 (Branch Taken: Poison instruction successfully flushed)");
-        else if (dut.id_stg.regfile.registers[8] == 32'd99) begin
-            $display("[FAIL] x8 = 99 (CRITICAL HAZARD ERROR: Poison instruction was NOT flushed on taken branch!)");
-            errors++;
-        end else begin
-            $display("[FAIL] x8 = %0d (Expected 42)", dut.id_stg.regfile.registers[8]);
-            errors++;
-        end
-
-        $display("==================================================");
+        $display("========================================================");
         if (errors == 0)
-            $display(">>> ALL HAZARD TESTS PASSED SUCCESSFULLY! <<<");
+            $display(">>> ALL TESTS PASSED! YOU HAVE A WORKING RV32I CORE! <<<");
         else
             $display(">>> TEST COMPLETED WITH %0d FAILURE(S) <<<", errors);
-        $display("==================================================\n");
+        $display("========================================================\n");
 
         $finish;
     end

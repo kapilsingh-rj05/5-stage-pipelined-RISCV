@@ -17,7 +17,7 @@ module regfile(
         end
     end
 
-    assign rv1 = (rs1==5'd0) ? 32'd0 : registers[rs1];
-    assign rv2 = (rs2==5'd0) ? 32'd0 : registers[rs2];
+    assign rv1 = (rs1==5'd0) ? 32'd0 : ((RegWrite && rs1==rd) ? writeData : registers[rs1]);
+    assign rv2 = (rs2==5'd0) ? 32'd0 : ((RegWrite && rs2==rd) ? writeData : registers[rs2]);
 
 endmodule

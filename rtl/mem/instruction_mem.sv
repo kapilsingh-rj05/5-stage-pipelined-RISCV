@@ -9,6 +9,6 @@ module instruction_mem(
         $readmemh("../tb/instructions.hex", instr_mem);
     end
 
-    assign instr = instr_mem[addr>>2];
+    assign instr = instr_mem[addr[6:2]];
 
 endmodule

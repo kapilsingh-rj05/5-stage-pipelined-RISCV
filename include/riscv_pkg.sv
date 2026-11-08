@@ -10,7 +10,8 @@ package riscv_pkg;
     typedef enum logic[1:0] {
         ALUOP_LDST=2'b00,
         ALUOP_BRANCH=2'b01,
-        ALUOP_RTYPE=2'b10
+        ALUOP_RTYPE=2'b10,
+        ALUOP_ITYPE=2'b11
     } alu_opcode_t;
 
 endpackage

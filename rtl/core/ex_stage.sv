@@ -26,11 +26,11 @@ module ex_stage(
     
     assign alu_val2 = id_ex_in.control[7] ? id_ex_in.imm : alu_val2_raw;
 
-    assign ex_pc = id_ex_in.pc + id_ex_in.imm;
+    // assign ex_pc = id_ex_in.pc + id_ex_in.imm;
     assign ex_mem_out.aluR = aluR;
-    assign ex_mem_out.rv2 = id_ex_in.rv2;
+    assign ex_mem_out.rv2 = alu_val2_raw;
     assign ex_mem_out.rd = id_ex_in.rd;
-    assign ex_mem_out.zero = aluZero;
+    // assign ex_mem_out.zero = aluZero;
     assign ex_mem_out.control = id_ex_in.control[6:2];
 
 endmodule

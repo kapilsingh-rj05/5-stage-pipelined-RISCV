@@ -31,7 +31,7 @@ module control(
         end
         //i-type
         7'b0010011: begin
-            {ALUSrc,MemToReg,RegWrite,MemRead,MemWrite,Branch,ALUOp1,ALUOp0} = 8'b10100010;
+            {ALUSrc,MemToReg,RegWrite,MemRead,MemWrite,Branch,ALUOp1,ALUOp0} = 8'b10100011;
         end
         default: {ALUSrc,MemToReg,RegWrite,MemRead,MemWrite,Branch,ALUOp1,ALUOp0} = 8'b00000000;
         endcase

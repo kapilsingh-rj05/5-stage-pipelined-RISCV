@@ -6,7 +6,6 @@ package pipeline_pkg;
     } if_id_t;
 
     typedef struct packed {
-        logic [31:0] pc;
         logic [31:0] rv1;
         logic [31:0] rv2;
         logic [31:0] imm;
@@ -18,7 +17,6 @@ package pipeline_pkg;
     } id_ex_t;
 
     typedef struct packed {
-        logic [31:0] pc;
         logic [31:0] aluR;
         logic [31:0] rv2;
         logic [4:0] rd;
