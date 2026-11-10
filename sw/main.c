@@ -1,13 +1,13 @@
 int main() {
-    volatile int a = 15;
-    volatile int b = 4;
-    volatile int add_res;
-    volatile int sub_res;
-    volatile int mul_res;
+    volatile int counter = 5;
+    volatile int sum = 0;
 
-    add_res = a + b;       // Should be 19
-    sub_res = a - b;       // Should be 11
-    mul_res = a * b;       // Should be 60
+    // do-while forces a pure backwards branch (BNE or BGE) at the bottom
+    do {
+        sum = sum + counter; // 5 + 4 + 3 + 2 + 1 = 15
+        counter = counter - 1;
+    } while (counter != 0);
 
-    return 0;
+    // Should return 15 in register x10 (a0)
+    return sum; 
 }
