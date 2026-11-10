@@ -1,5 +1,7 @@
 module control(
     input logic[6:0] opcode,
+    input logic[6:0] func7,
+    output logic mdu_enable,
     output logic ALUSrc,
     output logic MemToReg,
     output logic RegWrite,
@@ -11,29 +13,34 @@ module control(
 );
 
     always_comb begin : control
-        {ALUSrc,MemToReg,RegWrite,MemRead,MemWrite,Branch,ALUOp1,ALUOp0} = 8'b00000000;
+        {mdu_enable, ALUSrc,MemToReg,RegWrite,MemRead,MemWrite,Branch,ALUOp1,ALUOp0} = 9'b000000000;
         case(opcode)
         //R-type
         7'b0110011: begin
-            {ALUSrc,MemToReg,RegWrite,MemRead,MemWrite,Branch,ALUOp1,ALUOp0} = 8'b00100010;
+            if(func7==7'b0000001) begin
+                {mdu_enable,ALUSrc,MemToReg,RegWrite,MemRead,MemWrite,Branch,ALUOp1,ALUOp0} = 9'b100100010;
+            end
+            else begin
+                {mdu_enable,ALUSrc,MemToReg,RegWrite,MemRead,MemWrite,Branch,ALUOp1,ALUOp0} = 9'b000100010;
+            end
         end
         //ld
         7'b0000011: begin
-            {ALUSrc,MemToReg,RegWrite,MemRead,MemWrite,Branch,ALUOp1,ALUOp0} = 8'b11110000;
+            {mdu_enable,ALUSrc,MemToReg,RegWrite,MemRead,MemWrite,Branch,ALUOp1,ALUOp0} = 9'b011110000;
         end
         //store
         7'b0100011: begin
-            {ALUSrc,MemToReg,RegWrite,MemRead,MemWrite,Branch,ALUOp1,ALUOp0} = 8'b10001000;
+            {mdu_enable,ALUSrc,MemToReg,RegWrite,MemRead,MemWrite,Branch,ALUOp1,ALUOp0} = 9'b010001000;
         end
         //branch
         7'b1100011: begin
-            {ALUSrc,MemToReg,RegWrite,MemRead,MemWrite,Branch,ALUOp1,ALUOp0} = 8'b00000101;
+            {mdu_enable,ALUSrc,MemToReg,RegWrite,MemRead,MemWrite,Branch,ALUOp1,ALUOp0} = 9'b000000101;
         end
         //i-type
         7'b0010011: begin
-            {ALUSrc,MemToReg,RegWrite,MemRead,MemWrite,Branch,ALUOp1,ALUOp0} = 8'b10100011;
+            {mdu_enable,ALUSrc,MemToReg,RegWrite,MemRead,MemWrite,Branch,ALUOp1,ALUOp0} = 9'b010100011;
         end
-        default: {ALUSrc,MemToReg,RegWrite,MemRead,MemWrite,Branch,ALUOp1,ALUOp0} = 8'b00000000;
+        default: {mdu_enable,ALUSrc,MemToReg,RegWrite,MemRead,MemWrite,Branch,ALUOp1,ALUOp0} = 9'b000000000;
         endcase
     end
 endmodule

@@ -19,6 +19,7 @@ module top(
     logic PCWrite, if_id_write, control_mux_sel;
     logic if_flush;
     logic stall_out, is_branch_id;
+    logic id_ex_write, ex_mem_flush, mdu_done;
     
     // IF Stage
     if_stage if_stg(.clk(clk), .reset(reset), .PCSrc(PCSrc), .pc_branch(pc_branch), .pc_out(pc_out), .instr(instr_out), .PCWrite(PCWrite));
@@ -29,7 +30,7 @@ module top(
     id_stage id_stg(.clk(clk), .reset(reset), .if_id_in(if_id_reg), .writeData(wb_writeData), .writeRegister(wb_writeRegister), .RegWrite(wb_RegWrite_data), .id_ex_out(id_ex_next), .control_mux_sel(control_mux_sel), .branch_target(pc_branch), .PCSrc(PCSrc), .if_flush(if_flush), .stall_out(stall_out), .is_branch(is_branch_id));
 
     // EX Stage
-    ex_stage ex_stg(.id_ex_in(id_ex_reg), .ex_mem_out(ex_mem_next), .ex_mem_reg(ex_mem_reg), .mem_wb_reg(mem_wb_reg), .wb_writeData(wb_writeData));
+    ex_stage ex_stg(.clk(clk), .reset(reset), .id_ex_in(id_ex_reg), .ex_mem_out(ex_mem_next), .ex_mem_reg(ex_mem_reg), .mem_wb_reg(mem_wb_reg), .wb_writeData(wb_writeData), .mdu_done(mdu_done));
 
     // MEM Stage
     mem_stage mem_stg(.ex_mem_in(ex_mem_reg), .mem_wb_out(mem_wb_next), .clk(clk));
@@ -38,7 +39,7 @@ module top(
     wb_stage wb_stg(.mem_wb_in(mem_wb_reg), .writeData(wb_writeData), .writeRegister(wb_writeRegister), .RegWrite_data(wb_RegWrite_data));
 
     //hazard unit
-    hazard_unit hz(.id_ex_MemRead(id_ex_reg.control[4]), .id_ex_rd(id_ex_reg.rd), .if_id_rs1(if_id_reg.instr[19:15]), .if_id_rs2(if_id_reg.instr[24:20]), .PCWrite(PCWrite), .if_id_write(if_id_write), .control_mux_sel(control_mux_sel), .is_branch_id(is_branch_id), .id_ex_RegWrite(id_ex_reg.control[5]), .ex_mem_rd(ex_mem_reg.rd), .ex_mem_RegWrite(ex_mem_reg.control[3]), .mem_wb_rd(mem_wb_reg.rd), .mem_wb_RegWrite(mem_wb_reg.control[0]), .stall_out(stall_out));
+    hazard_unit hz(.id_ex_MemRead(id_ex_reg.control[4]), .id_ex_rd(id_ex_reg.rd), .if_id_rs1(if_id_reg.instr[19:15]), .if_id_rs2(if_id_reg.instr[24:20]), .PCWrite(PCWrite), .if_id_write(if_id_write), .control_mux_sel(control_mux_sel), .is_branch_id(is_branch_id), .id_ex_RegWrite(id_ex_reg.control[5]), .ex_mem_rd(ex_mem_reg.rd), .ex_mem_RegWrite(ex_mem_reg.control[3]), .mem_wb_rd(mem_wb_reg.rd), .mem_wb_RegWrite(mem_wb_reg.control[0]), .stall_out(stall_out), .id_ex_mdu_enable(id_ex_reg.mdu_enable), .id_ex_write(id_ex_write), .ex_mem_flush(ex_mem_flush), .mdu_done(mdu_done));
 
     always_ff @(posedge clk or negedge reset) begin
         if (!reset) begin
@@ -54,8 +55,17 @@ module top(
                 if_id_reg <= if_id_next;
             end
 
-            id_ex_reg <= id_ex_next;
-            ex_mem_reg <= ex_mem_next;
+            if(id_ex_write) begin
+                id_ex_reg <= id_ex_next;
+            end
+
+            if(ex_mem_flush) begin
+                ex_mem_reg <= '{default: 0};
+            end
+            else begin
+                ex_mem_reg <= ex_mem_next;
+            end
+
             mem_wb_reg <= mem_wb_next;
         end
     end

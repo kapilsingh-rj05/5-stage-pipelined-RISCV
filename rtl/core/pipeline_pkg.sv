@@ -13,7 +13,9 @@ package pipeline_pkg;
         logic [4:0] rs2;
         logic [4:0] rd;
         logic [3:0] func3;
+        logic [6:0] func7;
         logic [7:0] control;
+        logic mdu_enable;
     } id_ex_t;
 
     typedef struct packed {
