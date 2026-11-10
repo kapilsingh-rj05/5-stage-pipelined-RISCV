@@ -16,13 +16,13 @@ module id_stage(
 );
 
     logic[31:0] rv1, rv2, imm_val;
-    logic ALUSrc, MemToReg, RegWrite_if, MemRead, MemWrite, Branch, ALUOp1, ALUOp0;
+    logic ALUSrc, MemToReg, RegWrite_if, MemRead, MemWrite, Branch, ALUOp1, ALUOp0, jump;
     logic take_branch;
     logic mdu_enable;
 
     regfile regfile(.rs1(if_id_in.instr[19:15]), .rs2(if_id_in.instr[24:20]), .clk(clk), .RegWrite(RegWrite), .rd(writeRegister), .writeData(writeData), .rv1(rv1), .rv2(rv2));
     imm_gen imm_gen(.instr(if_id_in.instr), .imm_val(imm_val));
-    control ctrl(.opcode(if_id_in.instr[6:0]), .func7(if_id_in.instr[31:25]), .mdu_enable(mdu_enable), .ALUSrc(ALUSrc), .MemToReg(MemToReg), .RegWrite(RegWrite_if), .MemRead(MemRead), .MemWrite(MemWrite), .Branch(Branch), .ALUOp1(ALUOp1), .ALUOp0(ALUOp0));
+    control ctrl(.opcode(if_id_in.instr[6:0]), .func7(if_id_in.instr[31:25]), .mdu_enable(mdu_enable), .ALUSrc(ALUSrc), .MemToReg(MemToReg), .RegWrite(RegWrite_if), .MemRead(MemRead), .MemWrite(MemWrite), .Branch(Branch), .ALUOp1(ALUOp1), .ALUOp0(ALUOp0), .jump(jump));
 
     always_comb begin
         if (Branch) begin
@@ -43,7 +43,7 @@ module id_stage(
     assign branch_target = if_id_in.pc + imm_val;
     // assign id_ex_out.pc = if_id_in.pc;
     assign is_branch = Branch;
-    assign if_flush = Branch && take_branch && !stall_out;
+    assign if_flush = ((Branch && take_branch)||jump) && !stall_out;
     assign PCSrc = if_flush;
     assign id_ex_out.rv1 = rv1;
     assign id_ex_out.rv2 = rv2;

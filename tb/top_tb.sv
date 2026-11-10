@@ -28,19 +28,19 @@ module top_tb();
         #20;
         reset = 1; 
         
-        // Wait enough time for the C program loop to set up, execute, and return
-        #3000; 
+        // Wait enough time for the C program to set up, loop 10 times, and return
+        #4000; 
 
         $display("\n========================================================");
-        $display("   SOFTWARE TEST: COMPILED C CODE LOOP EXECUTION");
+        $display("   SOFTWARE TEST: C CODE 'FOR' LOOP EXECUTION");
         $display("========================================================");
         
-        // Check register x10 (a0) for the C function's return value
-        if (dut.id_stg.regfile.registers[10] == 32'd15) begin
-            $display("[PASS] x10 = 15 (C Code executed and returned correctly!)"); 
+        // Check register x10 (a0) for the sum of 1 to 10 (55)
+        if (dut.id_stg.regfile.registers[10] == 32'd55) begin
+            $display("[PASS] x10 = 55 (For-loop executed correctly!)"); 
             $display(">>> ALL TESTS PASSED! <<<");
         end else begin 
-            $display("[FAIL] x10 = %0d (Expected 15)", dut.id_stg.regfile.registers[10]); 
+            $display("[FAIL] x10 = %0d (Expected 55)", dut.id_stg.regfile.registers[10]); 
             $display(">>> TEST FAILED <<<");
         end
         $display("========================================================\n");
