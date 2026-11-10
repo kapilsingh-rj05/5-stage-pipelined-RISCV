@@ -24,7 +24,7 @@ module ex_stage(
 
     ALU alu(.aluControl(aluControl), .val1(alu_val1), .val2(alu_val2), .zero(aluZero), .aluResult(aluR));
     alu_control alu_control(.func3(id_ex_in.func3[2:0]), .bit30(id_ex_in.func3[3]), .ALUOp({id_ex_in.control[1], id_ex_in.control[0]}), .aluControl(aluControl));
-    multiplier mdu(.clk(clk), .reset(reset), .start(mdu_start), .done(mdu_done), .func3(id_ex_in.func3[2:0]), .a(alu_val1), .b(alu_val2_raw), .result(mdu_result));
+    mulDivUnit mdu(.clk(clk), .reset(reset), .start(mdu_start), .done(mdu_done), .func3(id_ex_in.func3[2:0]), .a(alu_val1), .b(alu_val2_raw), .result(mdu_result));
 
     assign alu_val1 = (forwardA==2'b10) ? ex_mem_reg.aluR : (forwardA==2'b01) ? wb_writeData : id_ex_in.rv1;
 

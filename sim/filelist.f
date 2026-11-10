@@ -18,4 +18,5 @@
 ../rtl/core/wb_stage.sv
 ../rtl/mem/data_mem.sv
 ../rtl/mem/instruction_mem.sv
+../rtl/core/mulDivUnit.sv
 ../tb/top_tb.sv
