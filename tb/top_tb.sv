@@ -18,7 +18,7 @@ module top_tb();
 
     // Waveform Dump
     initial begin
-        $dumpfile("wave.vcd");
+        $dumpfile("wave.vcd"); // Saves to sim/wave.vcd[cite: 4]
         $dumpvars(0, top_tb);
     end
 
@@ -28,21 +28,19 @@ module top_tb();
         #20;
         reset = 1; 
         
-        // Wait enough time for the MAC pipeline to execute all instructions.
-        // If your MDU takes ~32 cycles per multiply, 500ns (50 cycles) is safe.
-        #1500; 
+        // Extended wait time for 3 nested FFT loops and custom MAC execution
+        #2000000; 
 
         $display("\n========================================================");
-        $display("   HARDWARE TEST: CUSTOM MAC INSTRUCTION VALIDATION");
+        $display("   SOFTWARE TEST: RADIX-2 FFT EXECUTION (Q15 FIXED-POINT)");
         $display("========================================================");
         
-        // Check register x10 (a0) for the expected accumulated value (55)
-        // Note: Update "dut.id_stg.regfile.registers[10]" if your register file path differs.
-        if (dut.id_stg.regfile.registers[10] == 32'd55) begin
-            $display("[PASS] x10 = 55 (ACC updated and moved correctly!)"); 
+        // Verify x10 (a0) for the FFT output of bin 0
+        if (dut.id_stg.regfile.registers[10] == 32'd300) begin
+            $display("[PASS] x10 = 300 (FFT Bin 0 calculated correctly!)"); 
             $display(">>> ALL TESTS PASSED! <<<");
         end else begin 
-            $display("[FAIL] x10 = %0d (Expected 55)", dut.id_stg.regfile.registers[10]); 
+            $display("[FAIL] x10 = %0d (Expected 300)", dut.id_stg.regfile.registers[10]); 
             $display(">>> TEST FAILED <<<");
         end
         $display("========================================================\n");

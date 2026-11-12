@@ -54,8 +54,7 @@ module hazard_unit(
             ex_mem_flush = 1'b1;
             stall_out = 1'b1;
         end
-
-        if(load_use_hazard || branch_hazard) begin
+        else if(load_use_hazard || branch_hazard) begin
             PCWrite = 1'b0;
             if_id_write = 1'b0;
             id_ex_write = 1'b1;

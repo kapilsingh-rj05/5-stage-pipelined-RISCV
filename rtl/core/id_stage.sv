@@ -52,10 +52,10 @@ module id_stage(
     assign id_ex_out.rs1 = if_id_in.instr[19:15];
     assign id_ex_out.rs2 = if_id_in.instr[24:20];
     assign id_ex_out.rd = if_id_in.instr[11:7];
-    assign id_ex_out.mdu_enable = mdu_enable;
-    assign id_ex_out.mvacc_en = mvacc_en;
-    assign id_ex_out.mac_en = mac_en;
-    assign id_ex_out.clracc_en = clracc_en;
+    assign id_ex_out.mdu_enable = control_mux_sel ? mdu_enable : 1'b0;
+    assign id_ex_out.mvacc_en = control_mux_sel ? mvacc_en : 1'b0;
+    assign id_ex_out.mac_en = control_mux_sel ? mac_en : 1'b0;
+    assign id_ex_out.clracc_en = control_mux_sel ? clracc_en : 1'b0;
     assign id_ex_out.func3 = {if_id_in.instr[30], if_id_in.instr[14:12]};
     assign id_ex_out.control = control_mux_sel ? {ALUSrc, MemToReg, RegWrite_if, MemRead, MemWrite, Branch, ALUOp1, ALUOp0} : 8'd0;  
 

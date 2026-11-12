@@ -2,9 +2,9 @@
 
 .section .text.init
 _start:
-    # Initialize stack pointer to the top of your data memory.
-    # Adjust 0x00001000 to match the size/address of your data memory module.
-    li sp, 0x00001000 
+    # Initialize stack pointer to the TOP of the 4KB data memory.
+    # 0x1000 (Base) + 0x1000 (4KB Size) = 0x2000
+    li sp, 0x00002000 
     
     # Jump to main function in C
     jal ra, main
