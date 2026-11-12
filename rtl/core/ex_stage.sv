@@ -19,6 +19,7 @@ module ex_stage(
     logic[1:0] forwardA, forwardB;
     logic mdu_start;
     logic[31:0] mdu_result;
+    logic[31:0] acc_reg;
 
     forwarding_unit fwd(.id_ex_rs1(id_ex_in.rs1), .id_ex_rs2(id_ex_in.rs2), .ex_mem_rd(ex_mem_reg.rd), .ex_mem_RegWrite(ex_mem_reg.control[3]), .mem_wb_rd(mem_wb_reg.rd), .mem_wb_RegWrite(mem_wb_reg.control[0]), .forwardA(forwardA), .forwardB(forwardB));
 
@@ -33,8 +34,20 @@ module ex_stage(
     assign alu_val2 = id_ex_in.control[7] ? id_ex_in.imm : alu_val2_raw;
     assign mdu_start = id_ex_in.mdu_enable && !mdu_done;
 
+    always_ff @(posedge clk or negedge reset) begin : accumulator
+        if(!reset) begin
+            acc_reg <= 32'd0;
+        end
+        else if(id_ex_in.clracc_en) begin
+            acc_reg <= 32'd0;
+        end
+        else if(id_ex_in.mac_en && mdu_done) begin
+            acc_reg <= acc_reg + mdu_result;
+        end
+    end
+
     // assign ex_pc = id_ex_in.pc + id_ex_in.imm;
-    assign ex_mem_out.aluR = id_ex_in.mdu_enable ? mdu_result : aluR;
+    assign ex_mem_out.aluR = id_ex_in.mvacc_en ? acc_reg : id_ex_in.mdu_enable ? mdu_result : aluR;
     assign ex_mem_out.rv2 = alu_val2_raw;
     assign ex_mem_out.rd = id_ex_in.rd;
     // assign ex_mem_out.zero = aluZero;
